@@ -1,118 +1,194 @@
-
-
-
-let mainwraper = document.getElementById('post-block-wraper');
+let mainWrapper = document.getElementById('post-block-wraper');
 let overlay = document.getElementById('overlay-post');
 let content = document.getElementById('content');
-let closeoverlay = document.getElementById('closeoverlay');
-let addpost = document.getElementById('addpost');
-let postoverlay = document.getElementById('postoverlay');
+let closeOverlay = document.getElementById('closeOverlay');
+let addPost = document.getElementById('add');
+let postOverlay = document.getElementById('postoverlay');
 let form = document.getElementById('form');
+let inputTitle = document.getElementById('titlePost');
+let inputDescription = document.getElementById('postdescr');
 
-function ajax(url, callback){
+function ajax(url,callback) {
     let requist = new XMLHttpRequest();
-    requist.open('get',url);
-    requist.addEventListener('load',function(){
+    requist.open('GET', url);
+    requist.addEventListener('load', function() {
+    
         let data = JSON.parse(requist.responseText);
         callback(data);
     });
     requist.send();
 }
-ajax('https://jsonplaceholder.typicode.com/posts',function(data){
-    printdata(data);
+
+ajax('https://jsonplaceholder.typicode.com/posts', function(data) {
+    printData(data);
 });
 
-function printdata(data){
+function printData(data) {
     data.forEach(element => {
-        createpost(element);
-    });
+        createPost(element);
+    })
 }
 
-function createpost(item){
-    let divwraper = document.createElement('div');
-    divwraper.classList.add('posts');
-    divwraper.setAttribute('data-id', item.id);
-    let deletebutton = document.createElement('button');
-    deletebutton.setAttribute('data-id',item.id);
-    deletebutton.innerText='delete this post';
-    let h3tag = document.createElement('h3');
-    h3tag.innerText='item.id';
+function createPost(item) {
+    let divWrapper = document.createElement('div');
+    divWrapper.classList.add('posts');
+    divWrapper.setAttribute('data-id', item.id);
 
-    let h2tag =document.createElement('h2');
-    h2tag.innerText='item.title';
-    divwraper.appendChild(h3tag);
-    divwraper.appendChild(h2tag);
-    divwraper.appendChild(delete button);
+    let deleteButton = document.createElement('button');
+    deleteButton.classList.add('del-button');
+    deleteButton.setAttribute('data-id', item.id);
+    deleteButton.innerText = 'Delete This Post';
 
-    deletebutton.addEventListener('click',function(event){
+    let h3Tag = document.createElement('h3');
+    h3Tag.innerText = item.id;
+
+    let h2Tag = document.createElement('h2');
+    h2Tag.innerText = item.title;
+
+    divWrapper.appendChild(h3Tag);
+    divWrapper.appendChild(h2Tag);
+    divWrapper.appendChild(deleteButton);
+
+    deleteButton.addEventListener('click', function(event) {
         event.stopPropagation();
         let id = event.target.getAttribute('data-id');
-        deletepost(id);
+
+        let url = `https://jsonplaceholder.typicode.com/posts/${id}`;
+        fetch(url, {
+            method: 'DELETE',
+        })
+        .then(() => divWrapper.remove());
+
     });
-    divwraper.addEventListener('click', function(event){
-        let id =event.target.getAttribute('data-id');
-        openoverlay(id);
-    });
-    mainwraper.appendChild(divwraper);
-    console.log(divwraper);
 
-}
 
-function openoverlay(id){
-    overlay.classList.add('active');
-    let url =`https://jsonplaceholder.typicode.com/posts/${id}`;
-    ajax(url, function(data){
-        overlayfunction(data);
-
+    divWrapper.addEventListener('click', function(event) {
+        let id = event.target.getAttribute('data-id');
+        openOverlay(id);
     })
-    console.log(data);
+
+    mainWrapper.appendChild(divWrapper);
+
+    console.log(divWrapper);
 }
- function deletepost(id){
-     let url =`https://jsonplaceholder.typicode.com/posts/${id}`;
-     fetch(url,{
-         method:'delete',
-     })
-     .then(Response => Response.json());
-     .then(data =>{
-         console.log(data);
-     });
- }
 
- function overlayfunction(item){
-     let spanuserid = document.createElement('span');
-     spanuserid.innerText=item.userid;
-     let descriptionpost=document.createElement('p');
-     descriptionpost.innerText=item.body;
 
-     content.innerHTML='';
-     content.appendChild(spanuserid)
-     content.appendChild(descriptionpost);
- }
- closeoverlay.addEventListener('click',function(){
-     overlay.classList.remove('active');
- });
 
- addpost.addEventListener('click',function(){
-     postoverlay.classList.add('active');
- })
- form.addEventListener('submit',function(event){
-     event.preventDefault();
-     let formdata ={
-         title =event.target[0].value,
-         body:event.target[1].value
-     }
-     fetch('https://jsonplaceholder.typicode.com/posts',{
-         method:'post',
-         body:json.stringify(formdata),
-         headers:{
-             'content-type': 'application/json; charset=UTF-8',
-         },
-     })
-     .then((response)=>response.json())
-     .then((json)=>{
-         postoverlay.classList.remove('active');
-     });
-     console.log(formdata);
- })
+function openOverlay(id) {
+    overlay.classList.add('active');
+    let url = `https://jsonplaceholder.typicode.com/posts/${id}`;
+    ajax(url, function(data) {
+        overlayFunction(data);
+    })
+    console.log(id);
+}
 
- 
+
+function overlayFunction(item) {
+    let spanUserId = document.createElement('span');
+    spanUserId.innerText = item.userId;
+
+    let descriptionPost = document.createElement('p');
+    descriptionPost.innerText = item.body;
+
+    content.innerHTML = '';
+    content.appendChild(spanUserId);
+    content.appendChild(descriptionPost);
+
+}
+
+closeOverlay.addEventListener('click', function() {
+    overlay.classList.remove('active');
+    // content.innerHTML = '';
+});
+addPost.addEventListener('click', function() {
+    postOverlay.classList.add('active');
+    inputTitle.value = '';
+    inputDescription.value = '';
+})
+
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    let formData = {
+        title: event.target[0].value,
+        body: event.target[1].value
+    }
+
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+        .then((response) => response.json())
+        .then((post) => afterPostSave(post));
+
+    console.log(formData);
+   
+})
+
+function afterPostSave(post) {
+    createPost(post);
+    postOverlay.classList.remove('active');
+}
+
+let currentPage = 1;
+let totalPages;
+
+function getUsers(page) {
+    fetch('https://reqres.in/api/users?page=' + page, {
+        method: 'GET'
+    })
+    .then(function(response) {
+        if (response.status != 200) {
+            throw response.status;
+        }
+        return response.json();
+    })
+    .then(function(responseData) {
+        let fragment = document.createDocumentFragment();
+
+        responseData.data.forEach(element => {
+            let li = document.createElement('li');
+            li.classList.add('li-item');
+
+            let span = document.createElement('span');
+            span.textContent = element.first_name;
+
+            let img = document.createElement('img');
+            img.src = element.avatar;
+            img.classList.add('image-item');
+
+            li.appendChild(img);
+            li.appendChild(span);
+
+            fragment.appendChild(li);
+        });
+
+        document.getElementById('list').innerHTML = '';
+        document.getElementById('list').appendChild(fragment);
+
+        totalPages = responseData.total_pages;
+    })
+    .catch(function(x) {
+        if (x == 404) {
+            let p = document.createElement('p');
+            p.textContent = 'Server Error';
+            document.getElementById('api').appendChild(p);
+        } else {
+            let p = document.createElement('p');
+            p.textContent = 'Page Not Found';
+            document.getElementById('api').appendChild(p);
+        }
+    })
+}
+
+document.getElementById('loadprev').addEventListener('click',function() {
+    if (currentPage == 1) {
+        return;
+    }
+   
+    currentPage -=1;
+    getUsers(currentPage);
+});

@@ -1,3 +1,16 @@
+
+#list {
+    display: flex;
+    justify-content: space-between;
+}
+.li-item {
+    display: flex;
+    flex-direction: column;
+}
+.image-item {
+    height: 100px;
+}
+
 .posts {
     background-color: darkmagenta;
     padding: 20px;
@@ -53,4 +66,48 @@
 }
 .overlay-add.active {
     display: block;
+}
+.post-wraper{
+    width: 100%;
+    height: 800px;
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    grid-column-gap:35px;
+    grid-row-gap:30px;
+ 
+  
+}
+
+.posts{
+    width: 180px;
+    height: 220px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+}
+.del-button{
+background-color: brown;
+h
+
+}
+.del-button:hover{
+background-color: aqua;
+}
+h3{
+    top: 200px;
+}
+#addFormPost{
+    background-color: aqua;
+    width: 150px;
+    margin-top: 10px;
+}
+#form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.descr{
+    margin-top: 10px;
 }
